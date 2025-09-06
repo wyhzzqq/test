@@ -42,4 +42,5 @@ icook.hk:443#icook.hk
 www.gov.se:443#gov.se
 arely.ns.cloudflare.com:443#arely.ns
 denver.ns.cloudflare.com:443#denver.ns
-www.visa.com.sg#visa
+www.visa.com.sg:443#visa
+
