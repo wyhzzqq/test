@@ -1,3 +1,9 @@
+jd.190011.ggff.net:2053#域名优选
+icook.hk:443#icook.hk
+www.gov.se:443#gov.se
+arely.ns.cloudflare.com:443#arely.ns
+denver.ns.cloudflare.com:443#denver.ns
+www.visa.com.sg#visa
 46.232.108.59:40996#HK1
 45.152.64.70:51203#HK2
 156.251.176.116:34505#HK3
@@ -37,3 +43,4 @@
 172.66.0.0
 172.67.0.0
 162.159.0.0
+
