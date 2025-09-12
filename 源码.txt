@@ -1,5 +1,5 @@
 // --- 在这里设置您的密码 ---
-const PASSWORD = 'wyh6531440'; // <--- 请务必修改为您自己的强密码
+const PASSWORD = 'password'; // <--- 请务必修改为您自己的强密码
 
 // --- 其他常量 ---
 const AUTH_COOKIE_NAME = 'cf-worker-auth'; // Cookie的名称
@@ -353,4 +353,5 @@ function getHtml() {
   </body>
   </html>
   `;
+
 }
