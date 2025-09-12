@@ -1,0 +1,356 @@
+// --- 在这里设置您的密码 ---
+const PASSWORD = 'wyh6531440'; // <--- 请务必修改为您自己的强密码
+
+// --- 其他常量 ---
+const AUTH_COOKIE_NAME = 'cf-worker-auth'; // Cookie的名称
+const defaultAddressUrls = [
+  'https://addressesapi.090227.xyz/cmcc-ipv6',
+  'https://raw.githubusercontent.com/wyhzzqq/test/refs/heads/main/addressesapi.txt'
+];
+
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request));
+});
+
+/**
+ * 主请求处理函数
+ */
+async function handleRequest(request) {
+  const url = new URL(request.url);
+
+  // 1. 优先处理订阅链接，不受密码保护
+  if (url.pathname !== '/') {
+    const subscriptionCode = url.pathname.slice(1);
+    const vlessLinksBase64 = await SUBS_KV.get(subscriptionCode);
+    if (vlessLinksBase64) {
+      await SUBS_KV.put(subscriptionCode, vlessLinksBase64, { expirationTtl: 2592000 }); // 刷新有效期
+      return new Response(atob(vlessLinksBase64), {
+        headers: { 'content-type': 'text/plain;charset=UTF-8' },
+      });
+    } else {
+      return new Response('Subscription not found.', { status: 404 });
+    }
+  }
+
+  // 2. 处理主页面的请求
+  // 处理登录POST请求
+  if (request.method === 'POST') {
+    const formData = await request.formData();
+    const action = formData.get('action');
+
+    // 处理登录尝试
+    if (action === 'login') {
+      const submittedPassword = formData.get('password');
+      if (submittedPassword === PASSWORD) {
+        const authToken = await sha256(PASSWORD + (new Date().getDay())); // 简单的每日token
+        const response = new Response(null, {
+          status: 302, // 重定向
+          headers: { 'Location': url.pathname }
+        });
+        // 设置HttpOnly, Secure cookie, 有效期8小时
+        response.headers.set('Set-Cookie', `${AUTH_COOKIE_NAME}=${authToken}; Max-Age=28800; Path=/; HttpOnly; Secure; SameSite=Strict`);
+        return response;
+      } else {
+        // 密码错误，返回带错误提示的登录页
+        return new Response(getLoginPageHtml(true), {
+          status: 401,
+          headers: { 'content-type': 'text/html;charset=UTF-8' },
+        });
+      }
+    }
+
+    // 验证所有其他POST请求是否已认证
+    const isAuthenticated = await checkAuth(request);
+    if (!isAuthenticated) {
+      return new Response('Unauthorized', { status: 401 });
+    }
+    
+    // --- 已认证用户的 POST 请求逻辑 (生成链接/订阅) ---
+    if (action === 'generateLinks' || action === 'createSubscription') {
+        return handleApiRequests(formData, url);
+    }
+  }
+
+  // 3. 处理GET请求 (访问主页)
+  if (request.method === 'GET') {
+    const isAuthenticated = await checkAuth(request);
+    if (isAuthenticated) {
+      // 已认证，显示主应用页面
+      return new Response(getHtml(), {
+        headers: { 'content-type': 'text/html;charset=UTF-8' },
+      });
+    } else {
+      // 未认证，显示登录页面
+      return new Response(getLoginPageHtml(), {
+        headers: { 'content-type': 'text/html;charset=UTF-8' },
+      });
+    }
+  }
+
+  return new Response('Method not allowed', { status: 405 });
+}
+
+/**
+ * 处理已认证的API请求
+ */
+async function handleApiRequests(formData, url) {
+    const action = formData.get('action');
+
+    if (action === 'generateLinks') {
+        const originalLink = formData.get('originalLink');
+        let customAddresses = formData.get('customAddresses');
+
+        if (!originalLink) {
+            return new Response('Original VLESS link is required.', { status: 400 });
+        }
+
+        let addresses = [];
+        if (customAddresses) {
+            addresses = customAddresses.split('\n').map(line => line.trim()).filter(line => line);
+        } else {
+            for (const url of defaultAddressUrls) {
+                try {
+                    const response = await fetch(url, { headers: { 'Accept': 'text/plain' } });
+                    if (response.ok) {
+                        const text = await response.text();
+                        addresses.push(...text.split('\n').map(line => line.trim()).filter(line => line));
+                    }
+                } catch (error) { console.error(`Failed to fetch from ${url}:`, error); }
+            }
+        }
+        const newLinks = generateVlessLinks(originalLink, addresses);
+        return new Response(JSON.stringify({ newLinks }), { headers: { 'Content-Type': 'application/json' } });
+    }
+
+    if (action === 'createSubscription') {
+        const vlessLinks = JSON.parse(formData.get('vlessLinks'));
+        const subCode = formData.get('subCode');
+
+        if (!/^[a-zA-Z0-9]+$/.test(subCode)) {
+            return new Response('Subscription code must be alphanumeric.', { status: 400 });
+        }
+
+        const list = await SUBS_KV.list();
+        if (list.keys.length >= 50) {
+            return new Response('Maximum number of subscriptions (50) reached.', { status: 400 });
+        }
+        
+        const base64Content = btoa(vlessLinks.join('\n'));
+        await SUBS_KV.put(subCode, base64Content, { expirationTtl: 2592000 });
+
+        const subscriptionUrl = `${url.origin}/${subCode}`;
+        return new Response(JSON.stringify({ subscriptionUrl }), { headers: { 'Content-Type': 'application/json' } });
+    }
+
+    return new Response('Invalid action', { status: 400 });
+}
+
+
+/**
+ * 检查请求中的Cookie是否有效
+ * @param {Request} request
+ * @returns {Promise<boolean>}
+ */
+async function checkAuth(request) {
+  const cookieHeader = request.headers.get('Cookie');
+  if (!cookieHeader) return false;
+
+  const cookies = cookieHeader.split(';');
+  const authCookie = cookies.find(c => c.trim().startsWith(AUTH_COOKIE_NAME + '='));
+  if (!authCookie) return false;
+
+  const token = authCookie.split('=')[1];
+  const expectedToken = await sha256(PASSWORD + (new Date().getDay()));
+
+  return token === expectedToken;
+}
+
+/**
+ * SHA256 哈希函数
+ * @param {string} message
+ * @returns {Promise<string>}
+ */
+async function sha256(message) {
+  const msgUint8 = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+}
+
+/**
+ * VLESS链接生成函数 (已修正)
+ */
+function generateVlessLinks(originalLink, addresses) {
+    const newLinks = [];
+    try {
+        const originalUrl = new URL(originalLink);
+        const protocol = originalUrl.protocol;
+        const username = originalUrl.username;
+        const search = originalUrl.search;
+
+        for (const addrLine of addresses) {
+            const trimmedLine = addrLine.trim();
+            if (!trimmedLine) continue;
+            let ip, port = '443', name;
+            let ipPortPart = trimmedLine;
+            const nameIndex = trimmedLine.indexOf('#');
+            if (nameIndex !== -1) {
+                name = trimmedLine.substring(nameIndex + 1);
+                ipPortPart = trimmedLine.substring(0, nameIndex);
+            }
+            const bracketEndIndex = ipPortPart.lastIndexOf(']');
+            if (ipPortPart.startsWith('[') && bracketEndIndex > 0) {
+                ip = ipPortPart.substring(1, bracketEndIndex);
+                if (ipPortPart.length > bracketEndIndex + 2 && ipPortPart.charAt(bracketEndIndex + 1) === ':') {
+                    const potentialPort = ipPortPart.substring(bracketEndIndex + 2);
+                    if (/^\d+$/.test(potentialPort)) port = potentialPort;
+                }
+            } else {
+                const lastColonIndex = ipPortPart.lastIndexOf(':');
+                const firstColonIndex = ipPortPart.indexOf(':');
+                if (lastColonIndex === -1 || lastColonIndex !== firstColonIndex) {
+                    ip = ipPortPart;
+                } else {
+                    ip = ipPortPart.substring(0, lastColonIndex);
+                    const potentialPort = ipPortPart.substring(lastColonIndex + 1);
+                    if (/^\d+$/.test(potentialPort)) port = potentialPort; else ip = ipPortPart;
+                }
+            }
+            name = name || ip;
+            if (!ip) continue;
+            const hostPart = ip.includes(':') ? `[${ip}]` : ip;
+            const newUrlString = `${protocol}//${username}@${hostPart}:${port}${search}#${encodeURIComponent(name)}`;
+            newLinks.push(newUrlString);
+        }
+    } catch (e) { console.error("Error generating VLESS links:", e); return []; }
+    return newLinks;
+}
+
+/**
+ * 返回登录页面的HTML
+ * @param {boolean} hasError
+ * @returns {string}
+ */
+function getLoginPageHtml(hasError = false) {
+    const errorMessage = hasError ? '<p style="color: red;">密码错误，请重试。</p>' : '';
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>登录</title>
+      <style>
+        body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #f4f4f4; }
+        .login-container { background: #fff; padding: 2em; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 3px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 3px; }
+        button:hover { background-color: #0056b3; }
+      </style>
+    </head>
+    <body>
+      <div class="login-container">
+        <h1>请输入密码</h1>
+        ${errorMessage}
+        <form method="POST">
+          <input type="hidden" name="action" value="login">
+          <input type="password" name="password" placeholder="密码" required>
+          <button type="submit">进入</button>
+        </form>
+      </div>
+    </body>
+    </html>
+    `;
+}
+
+/**
+ * 返回主应用页面的HTML
+ */
+function getHtml() {
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VLESS Link Generator</title>
+    <style>
+      body { font-family: sans-serif; margin: 2em; background-color: #f4f4f4; }
+      .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 2em; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+      input, textarea, button { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 3px; border: 1px solid #ddd; box-sizing: border-box; }
+      button { background-color: #007bff; color: white; border: none; cursor: pointer; }
+      button:hover { background-color: #0056b3; }
+      #results, #sub-result { margin-top: 20px; }
+      #results-textarea { height: 200px; font-family: monospace; white-space: pre; }
+      .link-item { display: flex; align-items: center; }
+      .link-item input { flex-grow: 1; margin-right: 10px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>VLESS Link & Subscription Generator</h1>
+      <h2>1. 输入原始 VLESS 链接</h2>
+      <input type="text" id="originalLink" placeholder="vless://...">
+      <h2>2. 输入 IP:端口#名称 (每行一个)</h2>
+      <textarea id="customAddresses" rows="10" placeholder="1.2.3.4:8443#MyNode1\\n[2001:db8::1]:443#MyNode2\\n(留空则使用默认地址)"></textarea>
+      <button id="generateBtn">生成新链接</button>
+      <div id="results"></div>
+      <div id="subscriptionSection" style="display:none;">
+        <h2>3. 生成订阅链接</h2>
+        <input type="text" id="subCode" placeholder="输入英文或数字代码 (例如: my_sub)">
+        <button id="createSubBtn">创建订阅</button>
+        <div id="sub-result"></div>
+      </div>
+    </div>
+    <script>
+      let generatedLinks = [];
+      document.getElementById('generateBtn').addEventListener('click', async () => {
+        const originalLink = document.getElementById('originalLink').value;
+        if (!originalLink) { alert('请输入原始 VLESS 链接'); return; }
+        const formData = new FormData();
+        formData.append('action', 'generateLinks');
+        formData.append('originalLink', originalLink);
+        formData.append('customAddresses', document.getElementById('customAddresses').value);
+        const response = await fetch('/', { method: 'POST', body: formData });
+        const data = await response.json();
+        generatedLinks = data.newLinks;
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '';
+        if (generatedLinks && generatedLinks.length > 0) {
+          resultsDiv.innerHTML = \`<h2>生成结果:</h2><textarea id="results-textarea" readonly></textarea><button id="copyAllBtn">一键复制所有链接</button>\`;
+          document.getElementById('results-textarea').value = generatedLinks.join('\\n');
+          document.getElementById('copyAllBtn').addEventListener('click', e => copyToClipboard(generatedLinks.join('\\n'), e.target));
+          document.getElementById('subscriptionSection').style.display = 'block';
+        } else {
+          resultsDiv.innerHTML = '<p>未能生成链接，请检查输入或默认地址源是否可用。</p>';
+          document.getElementById('subscriptionSection').style.display = 'none';
+        }
+      });
+      document.getElementById('createSubBtn').addEventListener('click', async () => {
+        const subCode = document.getElementById('subCode').value;
+        if (!subCode) { alert('请输入订阅代码'); return; }
+        const formData = new FormData();
+        formData.append('action', 'createSubscription');
+        formData.append('vlessLinks', JSON.stringify(generatedLinks));
+        formData.append('subCode', subCode);
+        const response = await fetch('/', { method: 'POST', body: formData });
+        if (response.ok) {
+            const data = await response.json();
+            document.getElementById('sub-result').innerHTML = \`<p>订阅链接已生成:</p><div class="link-item"><input type="text" id="subLink" value="\${data.subscriptionUrl}" readonly><button onclick="copyToClipboard(document.getElementById('subLink').value, this)">复制</button></div>\`;
+        } else {
+            alert('创建失败: ' + await response.text());
+        }
+      });
+      function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = button.textContent;
+          button.textContent = '已复制!';
+          setTimeout(() => { button.textContent = originalText; }, 2000);
+        }).catch(err => { console.error('无法复制: ', err); alert('复制失败'); });
+      }
+    </script>
+  </body>
+  </html>
+  `;
+}
