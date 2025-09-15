@@ -30,7 +30,6 @@
 154.17.237.56:26749#US23
 38.46.0.195:31336#US24
 38.147.161.251:34237#US25
-72.18.81.133:34237#US26
 [2606:4700::]#IPV6-1
 [2400:cb00:2049::]#IPV6-2
 104.16.0.0:443#ip1
@@ -53,3 +52,4 @@ www.gov.se:443#gov.se
 arely.ns.cloudflare.com:443#arely.ns
 denver.ns.cloudflare.com:443#denver.ns
 www.visa.com.sg:443#visa
+
