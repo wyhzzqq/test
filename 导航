@@ -1,0 +1,462 @@
+// src/index.js
+
+export default {
+  async fetch(request) {
+    // 直接返回我们定义好的 HTML 内容
+    // 设置 headers 告诉浏览器这是一个 HTML 文件
+    return new Response(html, {
+      headers: {
+        'Content-Type': 'text/html;charset=UTF-8',
+      },
+    });
+  },
+};
+
+// 使用模板字符串定义完整的 HTML 页面
+const html = `
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2025导航</title>
+  
+  <!-- 样式 (CSS) -->
+  <style>
+    /* 基本样式 */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    /* 页面主要容器 */
+    .container {
+      max-width: 1024px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    /* 头部标题 */
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      color: #333;
+      font-weight: 600;
+    }
+    /* 分类 */
+    .category {
+      margin-bottom: 2.5rem;
+    }
+    /* 分类标题 */
+    .category h2 {
+      font-size: 1.5rem;
+      border-bottom: 2px solid #5c6ac4;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+      color: #5c6ac4;
+    }
+    /* 链接网格布局 */
+    .link-grid {
+      display: grid;
+      /* 响应式布局：自动填充，每列最小200px */
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+    /* 链接卡片 */
+    .link-card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      padding: 1.25rem;
+      text-decoration: none;
+      color: #333;
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      display: block; /* 使整个卡片可点击 */
+    }
+    .link-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+    }
+    /* 链接卡片内的标题 */
+    .link-card h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+    /* 链接卡片内的描述 */
+    .link-card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #666;
+      line-height: 1.5;
+    }
+    /* 页脚 */
+    footer {
+        text-align: center;
+        margin-top: 4rem;
+        color: #999;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>我的导航站点</h1>
+    </header>
+
+    <main>
+      <!-- ====================================================== -->
+      <!-- 分类 1: AI 工具 -->
+      <!-- 你可以在这里修改分类标题 -->
+      <!-- ====================================================== -->
+      <section class="category">
+        <h2>AI 工具</h2>
+        <div class="link-grid">
+          
+          <!-- 网址 1.1 -->
+          <a href="https://chat.openai.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>ChatGPT</h3>
+            <p>OpenAI 开发的强大语言模型。</p>
+          </a>
+
+          <!-- 网址 1.2 -->
+          <a href="https://www.perplexity.ai/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>Perplexity</h3>
+            <p>带有引用来源的对话式 AI 搜索引擎。</p>
+          </a>
+
+          <!-- 网址 1.3 -->
+          <a href="https://gemini.google.com/app" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>Gemini</h3>
+            <p>谷歌Gemini。</p>
+          </a>          
+          
+          <!-- 网址 1.4 -->
+          <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>Aistudio</h3>
+            <p>谷歌aistudio白嫖中心。</p>
+          </a>   
+          
+          <!-- 网址 1.5 -->
+          <a href="https://notebooklm.google.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>notebooklm</h3>
+            <p>谷歌notebooklm笔记。</p>
+          </a>  
+          
+           <!-- 网址 1.6 -->
+          <a href="https://claude.ai/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>Claude</h3>
+            <p>Claude系列大模型。</p>
+          </a>          
+          
+          <!-- 网址 1.7 -->
+          <a href="https://www.midjourney.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>Midjourney</h3>
+            <p>顶级的 AI 绘画和图像生成工具。</p>
+          </a>
+          
+          <!-- 网址 1.8 -->
+          <a href="https://lmarena.ai/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>lmarena</h3>
+            <p>各大模型对比。</p>
+          </a>     
+          
+          <!-- 网址 1.9 -->
+          <a href="https://openrouter.ai/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>openrouter</h3>
+            <p>openrouter部分API可白嫖。</p>
+          </a>     
+          
+          <!-- 网址 1.10 -->
+          <a href="https://discord.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>Discord</h3>
+            <p>Discord。</p>
+          </a>
+          
+          <!-- 网址 1.11 -->
+          <a href="https://ai-bot.cn/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>AI-BOT</h3>
+            <p>AI工具合集。</p>
+          </a>
+          
+          <!-- 网址 1.12 -->
+          <a href="https://www.notion.so/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>Notion</h3>
+            <p>Notion笔记。</p>
+          </a>
+          
+          <!--
+          要添加更多网址，请复制上面的 <a ...>...</a> 代码块并粘贴到这里。
+          修改 href (链接地址), h3 (网站名称) 和 p (网站描述)。
+          -->
+
+        </div>
+      </section>
+
+      <!-- ====================================================== -->
+      <!-- 分类 2: 视频媒体 -->
+      <!-- ====================================================== -->
+      <section class="category">
+        <h2>视频媒体</h2>
+        <div class="link-grid">
+          
+          <!-- 网址 2.1 -->
+          <a href="https://www.x.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>X</h3>
+            <p>原推特。</p>
+          </a>
+
+          <!-- 网址 2.2 -->
+          <a href="https://www.reddit.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>reddit</h3>
+            <p>reddit社媒。</p>
+          </a>
+
+          <!-- 网址 2.3 -->
+          <a href="https://bsky.app/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>蓝天</h3>
+            <p>X的竞争对手。</p>
+          </a>
+          
+          <!-- 网址 2.4 -->
+          <a href="https://web.whatsapp.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>whatsapp</h3>
+            <p>端对端加密通讯工具。</p>
+          </a>
+          
+          <!-- 网址 2.5 -->
+          <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>instagram</h3>
+            <p>短视频。</p>
+          </a>
+          
+          <!-- 网址 2.6 -->
+          <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>YouTube</h3>
+            <p>YouTube。</p>
+          </a>
+          
+          <!-- 网址 2.7 -->
+          <a href="https://www.twitch.tv/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>twitch</h3>
+            <p>直播。</p>
+          </a>
+          
+          <!-- 网址 2.8 -->
+          <a href="https://tv.76680117.xyz/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>LibreTV</h3>
+            <p>电影电视剧。</p>
+          </a>
+          
+          <!-- 网址 2.9 -->
+          <a href="https://tv.catcatcat.email/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>KatelyaTV</h3>
+            <p>电影电视剧。</p>
+          </a>
+          
+          <!-- 网址 2.10 -->
+          <a href="https://ddys.info/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>低端影视</h3>
+            <p>电影电视剧。</p>
+          </a>
+          
+          <!-- 网址 2.11 -->
+          <a href="https://www.05jl.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>纪录片之家</h3>
+            <p>纪录片下载。</p>
+          </a>
+
+        </div>
+      </section>
+      
+
+      
+      <!-- ====================================================== -->
+      <!-- 分类 3: 小说阅读 -->
+      <!-- ====================================================== -->
+      <section class="category">
+        <h2>小说阅读</h2>
+        <div class="link-grid">
+          
+          <!-- 网址 3.1 -->
+          <a href="https://booklink.me/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>booklink</h3>
+            <p>小说搜索工具。</p>
+          </a>
+
+          <!-- 网址 3.2 -->
+          <a href="https://www.ttkan.co/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>天天看小说</h3>
+            <p>在线看小说网站。</p>
+          </a>
+
+          <!-- 网址 3.3 -->
+          <a href="https://www.shoujix.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>手机小说</h3>
+            <p>在线看小说网站。</p>
+          </a>
+
+        </div>
+      </section>
+
+
+
+      <!-- ====================================================== -->
+      <!-- 分类 4: IP 工具 -->
+      <!-- ====================================================== -->
+      <section class="category">
+        <h2>IP 工具</h2>
+        <div class="link-grid">
+          
+          <!-- 网址 4.1 -->
+          <a href="https://ip.skk.moe/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>IP查询</h3>
+            <p>查询 IP 地址的归属地和详细信息。</p>
+          </a>
+
+          <!-- 网址 4.2 -->
+          <a href="https://ipcheck.ing/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>IP查询</h3>
+            <p>查询 IP 地址的归属地和详细信息。</p>
+          </a>
+
+          <!-- 网址 4.3 -->
+          <a href="https://whoer.net/zh" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>IP查询</h3>
+            <p>查询 IP 地址的归属地和详细信息。</p>
+          </a>
+          
+          <!-- 网址 4.4 -->
+          <a href="https://ipleak.net/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>DNS泄露检测</h3>
+            <p>查询 DNS 是否泄露。</p>
+          </a>
+          
+          <!-- 网址 4.5 -->
+          <a href="https://ping0.cc/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>IP纯净度检测</h3>
+            <p>查看 IP 纯净度。</p>
+          </a>
+          
+          <!-- 网址 4.6 -->
+          <a href="https://www.itdog.cn/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>ITDOG</h3>
+            <p>itdog工具集。</p>
+          </a>
+          
+
+        </div>
+      </section>
+      
+
+      <!-- ====================================================== -->
+      <!-- 分类 5: 模板脚本 -->
+      <!-- ====================================================== -->
+      <section class="category">
+        <h2>模板脚本</h2>
+        <div class="link-grid">
+          
+          <!-- 网址 5.1 -->
+          <a href="https://hamibot.com/dashboard/scripts" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>hamibot</h3>
+            <p>手机脚本。</p>
+          </a>
+
+          <!-- 网址 5.2 -->
+          <a href="https://github.com/FrozenGEE/compose" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>Docker常用yml</h3>
+            <p>常见NAS的Docker-compose模板。</p>
+          </a>
+
+          <!-- 网址 5.3 -->
+          <a href="https://casaos.zimaspace.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>CasaOS</h3>
+            <p>CasaOS官方。</p>
+          </a>
+          
+          <!-- 网址 5.4 -->
+          <a href="https://dietpi.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>DietPi</h3>
+            <p>DietPi-debian最小化系统。</p>
+          </a>
+          
+          <!-- 网址 5.5 -->
+          <a href="https://github.com/cmliu" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>CM</h3>
+            <p>Cloudflare节点-CM大佬。</p>
+          </a>
+          
+          <!-- 网址 5.6 -->
+          <a href="https://github.com/yonggekkk" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>甬哥</h3>
+            <p>Cloudflare节点-甬哥。</p>
+          </a>
+          
+          <!-- 网址 5.7 -->
+          <a href="https://bp.sub.cmliussss.net/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>Cloudflare部署</h3>
+            <p>Cloudflare节点-部署方案汇总。</p>
+          </a>
+
+        </div>
+      </section>
+      
+      <!-- ====================================================== -->
+      <!-- 分类 6: 公益项目 -->
+      <!-- ====================================================== -->
+      <section class="category">
+        <h2>公益项目</h2>
+        <div class="link-grid">
+          
+          <!-- 网址 6.1 -->
+          <a href="https://openproxylist.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>openproxylist</h3>
+            <p>公益。</p>
+          </a>
+
+          <!-- 网址 6.2 -->
+          <a href="https://xconfig.pages.dev/index2" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>NetBaan</h3>
+            <p>公益。</p>
+          </a>
+
+          <!-- 网址 6.3 -->
+          <a href="https://s.76680117.xyz/3fen" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>3分机场</h3>
+            <p>备用机场。</p>
+          </a>
+          
+          <!-- 网址 6.4 -->
+          <a href="https://s.76680117.xyz/yiyuan" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>1元机场</h3>
+            <p>推荐机场。</p>
+          </a>
+          
+          <!-- 网址 6.5 -->
+          <a href="https://s.76680117.xyz/pasyun" target="_blank" rel="noopener noreferrer" class="link-card">
+            <h3>帕斯云VPS</h3>
+            <p>推荐VPS。</p>
+          </a>
+          
+
+        </div>
+      </section>
+      
+
+      <!--
+      要添加更多分类，请复制上面的整个 <section ...>...</section> 代码块并粘贴到这里。
+      -->
+
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 导航</p>
+    </footer>
+    
+  </div>
+
+</body>
+</html>
+`;
