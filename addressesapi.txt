@@ -36,3 +36,4 @@ cf.877774.xyz:443#cf.877774.xyz
 cdns.doon.eu.org:443#cdns.doon.eu.org
 sub.danfeng.eu.org:443#sub.danfeng.eu.org
 ofo.033388.xyz:443#ofo.033388.xyz
+www.ntu.edu.sg:443#www.ntu.edu.sg
