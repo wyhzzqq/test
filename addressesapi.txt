@@ -17,8 +17,6 @@
 jd.190011.ggff.net:443#域名优选
 icook.hk:443#icook.hk
 www.gov.se:443#gov.se
-arely.ns.cloudflare.com:443#arely.ns
-denver.ns.cloudflare.com:443#denver.ns
 www.visa.com.sg:443#visa
 cloudflare.182682.xyz:443#cloudflare.182682.xyz
 freeyx.cloudflare88.eu.org:443#freeyx.cloudflare88.eu.org
@@ -27,7 +25,6 @@ cdn.2020111.xyz:443#cdn.2020111.xyz
 cf.0sm.com:443#cf.0sm.com
 cf.090227.xyz:443#cf.090227.xyz
 cfip.1323123.xyz:443#cfip.1323123.xyz
-cloudflare-ip.mofashi.ltd:443#cloudflare-ip.mofashi.ltd
 cdn.tzpro.xyz:443#cdn.tzpro.xyz
 xn--b6gac.eu.org:443#xn--b6gac.eu.org
 mfa.gov.ua:443#mfa.gov.ua
