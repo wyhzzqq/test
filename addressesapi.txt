@@ -48,16 +48,4 @@ cloudflare.182682.xyz#WeTest.Vip维护
 cloudflare-ip.mofashi.ltd#cloudflare-ip.mofashi.ltd
 nrt.xxxxxxxx.nyc.mn#nrt.xxxxxxxx.nyc.mn
 nrtcfdns.zone.id#nrtcfdns.zone.id
-yg1.ygkkk.dpdns.org#甬哥优选1
-yg2.ygkkk.dpdns.org#甬哥优选2
-yg3.ygkkk.dpdns.org#甬哥优选3
-yg4.ygkkk.dpdns.org#甬哥优选4
-yg5.ygkkk.dpdns.org#甬哥优选5
-yg6.ygkkk.dpdns.org#甬哥优选6
-yg7.ygkkk.dpdns.org#甬哥优选7
-yg8.ygkkk.dpdns.org#甬哥优选8
-yg9.ygkkk.dpdns.org#甬哥优选9
-yg10.ygkkk.dpdns.org#甬哥优选10
-yg11.ygkkk.dpdns.org#甬哥优选11
-yg12.ygkkk.dpdns.org#甬哥优选12
 cloudflare.idc.rocks#cloudflare.idc.rocks
