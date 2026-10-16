@@ -10,6 +10,9 @@
 179.255.118.250:443#US10
 [2606:4700::]#IPV6-1
 [2400:cb00:2049::]#IPV6-2
+[2606:4700:5a::]#IPV6-3
+[2606:4700:52::]#IPV6-4
+[2606:4700:57::]#IPV6-5
 jd.190011.ggff.net:443#域名优选
 icook.hk:443#icook.hk
 www.gov.se:443#gov.se
@@ -48,3 +51,8 @@ cloudflare-ip.mofashi.ltd#cloudflare-ip.mofashi.ltd
 nrt.xxxxxxxx.nyc.mn#nrt.xxxxxxxx.nyc.mn
 nrtcfdns.zone.id#nrtcfdns.zone.id
 cloudflare.idc.rocks#cloudflare.idc.rocks
+108.162.198.0:443#JP
+162.159.38.0:443#JP
+162.159.44.0:443#JP
+172.64.52.0:443#JP
+172.64.229.0:443#JP
